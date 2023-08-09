@@ -1,0 +1,83 @@
+// GET request to  ---   localhost:8080/members
+{
+"firstName": "Federer",
+"lastName": "Switzerland",
+"email": "f_switz@gmail.ca",
+"phoneNumber": "289-864-3880",
+"birthday": "10-04-1990",
+"address": "23 mabel ave NL",
+"joinDate": "22-11-2003",
+"type": "singer - tenor",
+"choirDept": null,
+"adminLevel": null,
+"events": null,
+"equipment": null
+}
+
+
+{
+"firstName": "June",
+"lastName": "Danderfield",
+"email": "junnyDan@hotmail.uk.co",
+"phoneNumber": "383-106-2277",
+"birthday": "27-12-1985",
+"address": "28 Handel Dr ON",
+"joinDate": "15-03-2015",
+"type": "instrumentalist - pianist",
+"choirDept": null,
+"adminLevel": null,
+"events": null,
+"equipment": null
+}
+
+
+
+
+// GET request to  ---   localhost:8080/equipment
+{
+  "name": "Piano",
+  "description": "Yamaha: Perfection",
+  "referenceNumber": "R37534-63439",
+  "handlers": null,
+  "events": null
+}
+
+
+{
+  "name": "Front Speaker 1",
+  "description": "Bose, Located near instruments",
+  "referenceNumber": "X03432-64344",
+  "handlers": null,
+  "events": null
+}
+
+
+// GET request to  ---   localhost:8080/events
+{
+"name": "Encounter",
+"description": "Annual Concert",
+"startDateTime": "13-09-2023 18:00:00",
+"endDateTime": "13-09-2023 21:00:00",
+"members": null,
+"equipment": null
+}
+
+{
+  "name": "Choir Practice",
+  "description": "Weekly",
+  "startDateTime": "18-08-2023 18:30:00",
+  "endDateTime": "18-08-2023 21:30:00",
+  "members": null,
+  "equipment": null
+}
+
+
+
+
+
+
+
+
+
+
+
