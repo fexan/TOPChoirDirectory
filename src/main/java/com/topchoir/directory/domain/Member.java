@@ -71,6 +71,7 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id ;
 
+
     public Member(List<Equipment> equipment, List<Event> events, String adminLevel, String choirDept, String type, LocalDate joinDate, String address, LocalDate birthday, String phoneNumber, String email, String lastName, String firstName) {
         this.equipment = equipment;
         this.events = events;
