@@ -5,12 +5,12 @@ import com.topchoir.directory.repository.EquipmentRepository;
 import org.hibernate.ObjectNotFoundException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class EquipmentServiceIntegrationTests {
 
     private static final Logger LOG = Logger.getLogger(EquipmentServiceIntegrationTests.class.toString());
@@ -34,7 +34,7 @@ public class EquipmentServiceIntegrationTests {
     @Autowired
     private EquipmentRepository equipmentRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Equipment piano = new Equipment( null, null, "R37534-63439", "Yamaha: Perfection", "Piano");
         Equipment frontSpeaker1 = new Equipment( null, null, "X03432-64344", "Bose, Located near instruments", "Front Speaker 1");
@@ -42,13 +42,12 @@ public class EquipmentServiceIntegrationTests {
         equipmentRepository.save(frontSpeaker1);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         equipmentRepository.deleteAll();
     }
 
     @Test
-    @Order(1)
     public void shouldGetAllEquipment() {
         List<Equipment> equipment = equipmentService.getAllEquipment();
         LOG.info(equipment.toString());
@@ -57,7 +56,6 @@ public class EquipmentServiceIntegrationTests {
 
 
     @Test
-    @Order(2)
     public void whenFindById_thenReturnOneEquipment() {
         // given in setUp()
 
@@ -71,7 +69,6 @@ public class EquipmentServiceIntegrationTests {
     }
 
     @Test
-    @Order(3)
     public void whenAddOneEquipment_thenReturnAddedOneEquipment() {
         // given
         Equipment drums = new Equipment( null, null, "X03432-64344", "Yamaha", "Drums");
@@ -90,7 +87,6 @@ public class EquipmentServiceIntegrationTests {
     }
 
     @Test
-    @Order(4)
     public void whenUpdateOneEquipment_thenReturnUpdatedOneEquipment(){
         //given
         Map<String, Object> partialPiano = new HashMap<String,Object>();
@@ -107,7 +103,6 @@ public class EquipmentServiceIntegrationTests {
     }
 
     @Test
-    @Order(5)
     public void whenDeleteOneEquipment_thenReturnException(){
 
         equipmentService.deleteOneEquipment(1);

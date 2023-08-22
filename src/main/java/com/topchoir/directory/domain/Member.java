@@ -3,6 +3,8 @@ package com.topchoir.directory.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ public class Member {
 
     @Column(nullable = true)
     @ManyToMany(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "members_handling_equipment",
             joinColumns= @JoinColumn(name ="member_id"),  //FK of the owning side
@@ -27,6 +30,7 @@ public class Member {
 
     @Column(nullable = true)
     @ManyToMany(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "members_attending_events",
             joinColumns= @JoinColumn(name ="member_id"),  //FK of the owning side

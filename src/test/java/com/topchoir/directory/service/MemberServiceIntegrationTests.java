@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -31,7 +32,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MemberServiceIntegrationTests {
 
     private static final Logger LOG = Logger.getLogger(MemberServiceIntegrationTests.class.toString());
@@ -63,13 +64,12 @@ public class MemberServiceIntegrationTests {
 
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         memberRepository.deleteAll();
     }
 
     @Test
-    @Order(1)
     public void shouldGetAllMembers() {
         List<Member> members = memberService.getAllMembers();
         LOG.info(members.toString());
@@ -78,7 +78,6 @@ public class MemberServiceIntegrationTests {
 
 
     @Test
-    @Order(2)
     public void whenFindById_thenReturnMember() {
         // given in setUp()
 
@@ -92,7 +91,6 @@ public class MemberServiceIntegrationTests {
     }
 
     @Test
-    @Order(3)
     public void whenAddMember_thenReturnAddedMember() {
         // given
         Member jones = new Member( null, null, null, null, "singer - alto", LocalDate.of(2015,02,18), "907b Jarry Junes Blvd, MB", LocalDate.of(1995,05,29), "383-451-9003", "j_Cheerioos9@yahoo.co.uk", "Cherry", "Jones");
@@ -112,7 +110,6 @@ public class MemberServiceIntegrationTests {
     }
 
     @Test
-    @Order(4)
     public void whenUpdateMember_thenReturnUpdatedMember(){
         //given
         Map<String, Object> partialJane = new HashMap<String,Object>();
@@ -129,7 +126,6 @@ public class MemberServiceIntegrationTests {
     }
 
     @Test
-    @Order(5)
     public void whenDeleteMember_thenReturnException(){
 
         memberService.deleteMember(1);
