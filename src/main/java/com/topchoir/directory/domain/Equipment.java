@@ -2,14 +2,19 @@ package com.topchoir.directory.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Equipment {
     @Column(nullable = true)
-    @ManyToMany(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(//fetch = FetchType.EAGER,
+            cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "equipment_for_events",
             joinColumns= @JoinColumn(name ="equipment_id"),  //FK of the owning side
@@ -20,7 +25,9 @@ public class Equipment {
 
     @Column(nullable = true)
     @ManyToMany(mappedBy= "equipment",
+           // fetch = FetchType.EAGER,
             cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @Fetch(FetchMode.JOIN)
     @JsonIgnoreProperties("equipment")
     private List<Member> handlers = new ArrayList<>();
 

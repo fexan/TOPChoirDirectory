@@ -5,12 +5,10 @@ import com.topchoir.directory.repository.EventRepository;
 import org.hibernate.ObjectNotFoundException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
@@ -24,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class EventServiceIntegrationTests {
 
     private static final Logger LOG = Logger.getLogger(EventServiceIntegrationTests.class.toString());
@@ -34,7 +32,7 @@ public class EventServiceIntegrationTests {
     @Autowired
     private EventRepository eventRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Event practice = new Event( null, null, LocalDateTime.of(2023,8,18,21,30,00),LocalDateTime.of(2023,8,18,18,30,00), "Weekly", "Practice");
         Event encounter = new Event( null, null, LocalDateTime.of(2023,10,18,21,30,00),LocalDateTime.of(2023,10,18,18,30,00), "Annual Concert", "Encounter");
@@ -42,13 +40,12 @@ public class EventServiceIntegrationTests {
         eventRepository.save(encounter);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         eventRepository.deleteAll();
     }
 
     @Test
-    @Order(1)
     public void shouldGetAllEvents() {
         List<Event> events = eventService.getAllEvents();
         LOG.info(events.toString());
@@ -57,7 +54,6 @@ public class EventServiceIntegrationTests {
 
 
     @Test
-    @Order(2)
     public void whenFindById_thenReturnEvent() {
         // given in setUp()
 
@@ -71,7 +67,6 @@ public class EventServiceIntegrationTests {
     }
 
     @Test
-    @Order(3)
     public void whenAddEvent_thenReturnAddedEvent() {
         // given
         Event powerShift = new Event( null, null, LocalDateTime.of(2023,8,18,21,30,00),LocalDateTime.of(2023,8,18,18,30,00), "Annual", "Power Shift");
@@ -90,7 +85,6 @@ public class EventServiceIntegrationTests {
     }
 
     @Test
-    @Order(4)
     public void whenUpdateEvent_thenReturnUpdatedEvent(){
         //given
         Map<String, Object> partialEncounter = new HashMap<String,Object>();
@@ -107,7 +101,6 @@ public class EventServiceIntegrationTests {
     }
 
     @Test
-    @Order(5)
     public void whenDeleteEvent_thenReturnException(){
 
         eventService.deleteEvent(1);

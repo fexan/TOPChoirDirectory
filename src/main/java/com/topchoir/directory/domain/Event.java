@@ -3,6 +3,8 @@ package com.topchoir.directory.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,12 +16,14 @@ public class Event {
     @Column(nullable = true)
     @ManyToMany(mappedBy= "events",
             cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @Fetch(FetchMode.JOIN)
     @JsonIgnoreProperties("events")
     private List<Equipment> equipment = new ArrayList<>();
 
     @Column(nullable = true)
     @ManyToMany(mappedBy= "events",
             cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @Fetch(FetchMode.JOIN)
     @JsonIgnoreProperties("events")
     private List<Member> members = new ArrayList<>();
 
