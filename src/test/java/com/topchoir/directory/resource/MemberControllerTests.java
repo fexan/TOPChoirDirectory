@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -47,7 +48,7 @@ import java.util.logging.Logger;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class MemberControllerTests {
 
     @Autowired
@@ -88,14 +89,13 @@ class MemberControllerTests {
         memberRepository.save(jane);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         memberRepository.deleteAll();
     }
 
 
     @Test
-    @Order(1)
     void getAllMembers() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/members"))
@@ -106,7 +106,6 @@ class MemberControllerTests {
     }
 
     @Test
-    @Order(2)
     void getOneMember() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/members/1"))
@@ -115,7 +114,6 @@ class MemberControllerTests {
     }
 
     @Test
-    @Order(3)
     public void whenValidInput_thenCreateEmployee() throws IOException, Exception {
 
         Member jones = new Member( null, null, null, null, "singer - alto", LocalDate.of(2015,02,18), "907b Jarry Junes Blvd, MB", LocalDate.of(1995,05,29), "383-451-9003", "j_Cheerioos9@yahoo.co.uk", "Cherry", "Jones");
@@ -132,7 +130,6 @@ class MemberControllerTests {
     }
 
     @Test
-    @Order(4)
     void whenUpdateMember_thenReturnUpdatedMember() throws Exception {
         Map<String, Object> partialJane = new HashMap<String,Object>();
         partialJane.put("lastName","Newmann");
@@ -148,7 +145,6 @@ class MemberControllerTests {
     }
 
     @Test
-    @Order(5)
     public void whenDeleteMember_thenReturnException() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/members/2"))
                 .andExpect(status().isOk());

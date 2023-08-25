@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -44,7 +45,7 @@ import java.util.logging.Logger;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class EventControllerTests {
 
     @Autowired
@@ -69,14 +70,13 @@ public class EventControllerTests {
         eventRepository.save(encounter);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         eventRepository.deleteAll();
     }
 
 
     @Test
-    @Order(1)
     void getAllEvents() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/events"))
@@ -87,7 +87,6 @@ public class EventControllerTests {
     }
 
     @Test
-    @Order(2)
     void getOneEvent() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/events/2"))
@@ -96,7 +95,6 @@ public class EventControllerTests {
     }
 
     @Test
-    @Order(3)
     public void whenValidInput_thenCreateEvent() throws IOException, Exception {
 
         Event powerShift = new Event( null, null, LocalDateTime.of(2023,8,18,21,30,00),LocalDateTime.of(2023,8,18,18,30,00), "Annual", "Power Shift");
@@ -113,7 +111,6 @@ public class EventControllerTests {
     }
 
     @Test
-    @Order(4)
     void whenUpdateEvent_thenReturnUpdatedEvent() throws Exception {
         Map<String, Object> partialEncounter = new HashMap<String,Object>();
         partialEncounter.put("name","Encounter His Power");
@@ -129,7 +126,6 @@ public class EventControllerTests {
     }
 
     @Test
-    @Order(5)
     public void whenDeleteEvent_thenReturnException() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/events/2"))
                 .andExpect(status().isOk());
