@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -43,7 +44,7 @@ import java.util.logging.Logger;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class EquipmentControllerTests {
 
     @Autowired
@@ -68,14 +69,13 @@ class EquipmentControllerTests {
         equipmentRepository.save(frontSpeaker1);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         equipmentRepository.deleteAll();
     }
 
 
     @Test
-    @Order(1)
     void getAllEquipment() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/equipment"))
@@ -86,7 +86,6 @@ class EquipmentControllerTests {
     }
 
     @Test
-    @Order(2)
     void getOneEquipment() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/equipment/1"))
@@ -95,7 +94,6 @@ class EquipmentControllerTests {
     }
 
     @Test
-    @Order(3)
     public void whenValidInput_thenCreateOneEquipment() throws IOException, Exception {
 
         Equipment drums = new Equipment( null, null, "X03432-64344", "Yamaha", "Drums");
@@ -112,7 +110,6 @@ class EquipmentControllerTests {
     }
 
     @Test
-    @Order(4)
     void whenUpdateOneEquipment_thenReturnUpdatedOneEquipment() throws Exception {
         Map<String, Object> partialPiano = new HashMap<String,Object>();
         partialPiano.put("name","Piano-15678");
@@ -128,7 +125,6 @@ class EquipmentControllerTests {
     }
 
     @Test
-    @Order(5)
     public void whenDeleteEquipment_thenReturnException() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/equipment/2"))
                 .andExpect(status().isOk());
