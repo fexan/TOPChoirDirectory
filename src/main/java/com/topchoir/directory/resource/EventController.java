@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/events")
+@RequestMapping("/api/events")
 public class EventController {
 
     @Autowired
