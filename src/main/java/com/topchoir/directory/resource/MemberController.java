@@ -36,7 +36,7 @@ public class MemberController {
     private String clientSecret;
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String issuer;
-    @Value("${auth0.clinet.realm}")
+    @Value("${auth0.client.realm}")
     private String realm;
 
     @GetMapping

@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-
     @Value("${auth0.domain}")
     private String domain;
 
@@ -31,7 +30,7 @@ public class AuthController {
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String issuer;
 
-    @Value("${auth0.clinet.realm}")
+    @Value("${auth0.client.realm}")
     private String realm;
 
     @GetMapping("/public")

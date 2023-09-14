@@ -64,6 +64,9 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String userId;
 
+    @Transient
+    private String password;
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -77,14 +80,12 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Transient
-    private String password;
 
 
     public Member(List<Equipment> equipment, List<Event> events, String adminLevel,
                   String choirDept, String type, LocalDate joinDate, String address,
-                  LocalDate birthday, String phoneNumber, String email, String lastName,
-                  String firstName, String userId, String password) {
+                  LocalDate birthday, String phoneNumber,String userId, String password,
+                  String email, String lastName, String firstName) {
         this.equipment = equipment;
         this.events = events;
         this.adminLevel = adminLevel;
@@ -94,11 +95,12 @@ public class Member {
         this.address = address;
         this.birthday = birthday;
         this.phoneNumber = phoneNumber;
+        this.userId = userId;
+        this.password = password;
         this.email = email;
         this.lastName = lastName;
         this.firstName = firstName;
-        this.userId = userId;
-        this.password = password;
+
     }
 
     public Member() {
