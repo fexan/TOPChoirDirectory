@@ -78,7 +78,7 @@ class EquipmentControllerTests {
     @Test
     void getAllEquipment() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/equipment"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/equipment"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].name").value("Piano"))
@@ -88,7 +88,7 @@ class EquipmentControllerTests {
     @Test
     void getOneEquipment() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/equipment/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/equipment/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Piano"));
     }
@@ -98,7 +98,7 @@ class EquipmentControllerTests {
 
         Equipment drums = new Equipment( null, null, "X03432-64344", "Yamaha", "Drums");
 
-        MvcResult mvcResult =  mockMvc.perform(MockMvcRequestBuilders.post("/equipment")
+        MvcResult mvcResult =  mockMvc.perform(MockMvcRequestBuilders.post("/api/equipment")
                         .content(objectMapper.writeValueAsString(drums)).contentType("application/json;charset=UTF-8"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -115,7 +115,7 @@ class EquipmentControllerTests {
         partialPiano.put("name","Piano-15678");
         partialPiano.put("referenceNumber","X03762-10864");
 
-        MvcResult mvcResult =  mockMvc.perform(MockMvcRequestBuilders.patch("/equipment/1")
+        MvcResult mvcResult =  mockMvc.perform(MockMvcRequestBuilders.patch("/api/equipment/1")
                         .content(objectMapper.writeValueAsString(partialPiano)).contentType("application/json;charset=UTF-8"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -126,11 +126,11 @@ class EquipmentControllerTests {
 
     @Test
     public void whenDeleteEquipment_thenReturnException() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/equipment/2"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/equipment/2"))
                 .andExpect(status().isOk());
 
         try {
-            mockMvc.perform(MockMvcRequestBuilders.get("/equipment/2"));
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/equipment/2"));
         }catch (Exception e) {
             assertEquals("Request processing failed: org.hibernate.ObjectNotFoundException: No row with the "
                     + "given identifier exists: [Equipment with id {2} not found#Optional.empty]",e.getMessage());

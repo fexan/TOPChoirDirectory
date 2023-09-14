@@ -67,8 +67,12 @@ class MemberControllerTests {
 
     @BeforeEach
     public void setUp() {
-        Member john = new Member( null, null, null, null, "singer - tenor", LocalDate.of(2003,11,22), "29 St Johns NL", LocalDate.of(1990,04,10), "289-864-3880", "f_switz@gmail.ca", "Stone", "John");
-        Member jane = new Member( null, null, null, null, "singer - soprano", LocalDate.of(2015,02,18), "12b-3600 Junper Rains Dr ON", LocalDate.of(1995,05,29), "383-451-9003", "jNelly@yahoo.co.uk", "Nelliers", "Jane");
+        Member john = new Member( null, null, null, null, "singer - tenor", LocalDate.of(2003,11,22),
+                "29 St Johns NL", LocalDate.of(1990,04,10), "289-864-3880",
+                "auth0|76ef87f2086f90eo72098005","pnOPQfgiy63@07!--","f_switz@gmail.ca", "Stone", "John");
+        Member jane = new Member( null, null, null, null, "singer - soprano", LocalDate.of(2015,02,18),
+                "12b-3600 Junper Rains Dr ON", LocalDate.of(1995,05,29), "383-451-9003",
+                "auth0|17gh87f8556f90da09834775","8463ayUIhge@$#&))>","jNelly@yahoo.co.uk", "Nelliers", "Jane");
         memberRepository.save(john);
         memberRepository.save(jane);
 
@@ -98,7 +102,7 @@ class MemberControllerTests {
     @Test
     void getAllMembers() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/members"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/members"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].firstName").value("John"))
@@ -108,7 +112,7 @@ class MemberControllerTests {
     @Test
     void getOneMember() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/members/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/members/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value("John"));
     }
@@ -116,9 +120,11 @@ class MemberControllerTests {
     @Test
     public void whenValidInput_thenCreateEmployee() throws IOException, Exception {
 
-        Member jones = new Member( null, null, null, null, "singer - alto", LocalDate.of(2015,02,18), "907b Jarry Junes Blvd, MB", LocalDate.of(1995,05,29), "383-451-9003", "j_Cheerioos9@yahoo.co.uk", "Cherry", "Jones");
+        Member jones = new Member( null, null, null, null, "singer - alto", LocalDate.of(2015,02,18),
+                "907b Jarry Junes Blvd, MB", LocalDate.of(1995,05,29), "383-451-9003",
+                "auth0|25ng90f8556e80rt09801629","72HG2!0Odfuye*^%","j_Cheerioos9@yahoo.co.uk", "Cherry", "Jones");
 
-        MvcResult mvcResult =  mockMvc.perform(MockMvcRequestBuilders.post("/members")
+        MvcResult mvcResult =  mockMvc.perform(MockMvcRequestBuilders.post("/api/members")
                         .content(objectMapper.writeValueAsString(jones)).contentType("application/json;charset=UTF-8"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -135,7 +141,7 @@ class MemberControllerTests {
         partialJane.put("lastName","Newmann");
         partialJane.put("address","29 Juniper St SK");
 
-        MvcResult mvcResult =  mockMvc.perform(MockMvcRequestBuilders.patch("/members/2")
+        MvcResult mvcResult =  mockMvc.perform(MockMvcRequestBuilders.patch("/api/members/2")
                         .content(objectMapper.writeValueAsString(partialJane)).contentType("application/json;charset=UTF-8"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -146,11 +152,11 @@ class MemberControllerTests {
 
     @Test
     public void whenDeleteMember_thenReturnException() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/members/2"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/members/2"))
                 .andExpect(status().isOk());
 
         try {
-            mockMvc.perform(MockMvcRequestBuilders.get("/members/2"));
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/members/2"));
         }catch (Exception e) {
             assertEquals("Request processing failed: org.hibernate.ObjectNotFoundException: No row with the "
                     + "given identifier exists: [Member with id {2} not found#Optional.empty]",e.getMessage());

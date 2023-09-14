@@ -8,7 +8,6 @@ import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -18,23 +17,23 @@ public class Member {
     // to save an object containing a nested object
 
     @Column(nullable = true)
-    @ManyToMany(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "members_handling_equipment",
-            joinColumns= @JoinColumn(name ="member_id"),  //FK of the owning side
-            inverseJoinColumns=@JoinColumn(name="equipment_id")  //FK of inverse side
+            joinColumns = @JoinColumn(name = "member_id"),  //FK of the owning side
+            inverseJoinColumns = @JoinColumn(name = "equipment_id")  //FK of inverse side
     )
     @JsonIgnoreProperties("handlers")
     private List<Equipment> equipment = new ArrayList<>();
 
     @Column(nullable = true)
-    @ManyToMany(cascade= {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "members_attending_events",
-            joinColumns= @JoinColumn(name ="member_id"),  //FK of the owning side
-            inverseJoinColumns=@JoinColumn(name="event_id")  //FK of inverse side
+            joinColumns = @JoinColumn(name = "member_id"),  //FK of the owning side
+            inverseJoinColumns = @JoinColumn(name = "event_id")  //FK of inverse side
     )
     @JsonIgnoreProperties("members")
     private List<Event> events = new ArrayList<>();
@@ -62,21 +61,31 @@ public class Member {
     @Column(nullable = false)
     private String phoneNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
+    private String userId;
+
+    @Transient
+    private String password;
+
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
-    private String lastName ;
+    private String lastName;
 
-    @Column (nullable = false) //nullable = false is a required field
+    @Column(nullable = false) //nullable = false is a required field
     private String firstName;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id ;
+    private int id;
 
 
-    public Member(List<Equipment> equipment, List<Event> events, String adminLevel, String choirDept, String type, LocalDate joinDate, String address, LocalDate birthday, String phoneNumber, String email, String lastName, String firstName) {
+
+    public Member(List<Equipment> equipment, List<Event> events, String adminLevel,
+                  String choirDept, String type, LocalDate joinDate, String address,
+                  LocalDate birthday, String phoneNumber,String userId, String password,
+                  String email, String lastName, String firstName) {
         this.equipment = equipment;
         this.events = events;
         this.adminLevel = adminLevel;
@@ -86,9 +95,12 @@ public class Member {
         this.address = address;
         this.birthday = birthday;
         this.phoneNumber = phoneNumber;
+        this.userId = userId;
+        this.password = password;
         this.email = email;
         this.lastName = lastName;
         this.firstName = firstName;
+
     }
 
     public Member() {
@@ -228,6 +240,22 @@ public class Member {
         this.id = id;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public String toString() {
         return "Member{" +
@@ -244,6 +272,7 @@ public class Member {
                 ", lastName='" + lastName + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", id=" + id +
+                ", userId=" + userId +
                 '}';
     }
 

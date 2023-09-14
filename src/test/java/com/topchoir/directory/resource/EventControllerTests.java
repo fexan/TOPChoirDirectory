@@ -79,7 +79,7 @@ public class EventControllerTests {
     @Test
     void getAllEvents() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/events"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/events"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].name").value("Practice"))
@@ -89,7 +89,7 @@ public class EventControllerTests {
     @Test
     void getOneEvent() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/events/2"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/events/2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Encounter"));
     }
@@ -99,7 +99,7 @@ public class EventControllerTests {
 
         Event powerShift = new Event( null, null, LocalDateTime.of(2023,8,18,21,30,00),LocalDateTime.of(2023,8,18,18,30,00), "Annual", "Power Shift");
 
-        MvcResult mvcResult =  mockMvc.perform(MockMvcRequestBuilders.post("/events")
+        MvcResult mvcResult =  mockMvc.perform(MockMvcRequestBuilders.post("/api/events")
                         .content(objectMapper.writeValueAsString(powerShift)).contentType("application/json;charset=UTF-8"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -116,7 +116,7 @@ public class EventControllerTests {
         partialEncounter.put("name","Encounter His Power");
         partialEncounter.put("description","Meet Him, Praise Him, Worship Him, Encounter Him");
 
-        MvcResult mvcResult =  mockMvc.perform(MockMvcRequestBuilders.patch("/events/2")
+        MvcResult mvcResult =  mockMvc.perform(MockMvcRequestBuilders.patch("/api/events/2")
                         .content(objectMapper.writeValueAsString(partialEncounter)).contentType("application/json;charset=UTF-8"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -127,11 +127,11 @@ public class EventControllerTests {
 
     @Test
     public void whenDeleteEvent_thenReturnException() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/events/2"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/events/2"))
                 .andExpect(status().isOk());
 
         try {
-            mockMvc.perform(MockMvcRequestBuilders.get("/events/2"));
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/events/2"));
         }catch (Exception e) {
             assertEquals("Request processing failed: org.hibernate.ObjectNotFoundException: No row with the "
                     + "given identifier exists: [Event with id {2} not found#Optional.empty]",e.getMessage());
