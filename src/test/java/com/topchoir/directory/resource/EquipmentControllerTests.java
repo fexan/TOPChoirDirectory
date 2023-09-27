@@ -94,7 +94,7 @@ class EquipmentControllerTests {
     }
 
     @Test
-    public void whenValidInput_thenCreateOneEquipment() throws IOException, Exception {
+    public void whenValidInputThenCreateOneEquipment() throws IOException, Exception {
 
         Equipment drums = new Equipment( null, null, "X03432-64344", "Yamaha", "Drums");
 
@@ -110,7 +110,7 @@ class EquipmentControllerTests {
     }
 
     @Test
-    void whenUpdateOneEquipment_thenReturnUpdatedOneEquipment() throws Exception {
+    void whenUpdateOneEquipmentThenReturnUpdatedOneEquipment() throws Exception {
         Map<String, Object> partialPiano = new HashMap<String,Object>();
         partialPiano.put("name","Piano-15678");
         partialPiano.put("referenceNumber","X03762-10864");
@@ -125,7 +125,7 @@ class EquipmentControllerTests {
     }
 
     @Test
-    public void whenDeleteEquipment_thenReturnException() throws Exception {
+    public void whenDeleteOneEquipmentThenReturnException() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/equipment/2"))
                 .andExpect(status().isOk());
 

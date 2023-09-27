@@ -56,7 +56,7 @@ public class EquipmentServiceIntegrationTests {
 
 
     @Test
-    public void whenFindById_thenReturnOneEquipment() {
+    public void whenFindByIdThenReturnOneEquipment() {
         // given in setUp()
 
 
@@ -69,7 +69,7 @@ public class EquipmentServiceIntegrationTests {
     }
 
     @Test
-    public void whenAddOneEquipment_thenReturnAddedOneEquipment() {
+    public void whenAddOneEquipmentThenReturnAddedOneEquipment() {
         // given
         Equipment drums = new Equipment( null, null, "X03432-64344", "Yamaha", "Drums");
 
@@ -87,7 +87,7 @@ public class EquipmentServiceIntegrationTests {
     }
 
     @Test
-    public void whenUpdateOneEquipment_thenReturnUpdatedOneEquipment(){
+    public void whenUpdateOneEquipmentThenReturnUpdatedOneEquipment(){
         //given
         Map<String, Object> partialPiano = new HashMap<String,Object>();
         partialPiano.put("name","Piano-15678");
@@ -103,7 +103,7 @@ public class EquipmentServiceIntegrationTests {
     }
 
     @Test
-    public void whenDeleteOneEquipment_thenReturnException(){
+    public void whenDeleteOneEquipmentThenReturnException(){
 
         equipmentService.deleteOneEquipment(1);
 

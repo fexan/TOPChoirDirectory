@@ -5,8 +5,10 @@ import com.auth0.exception.Auth0Exception;
 import com.auth0.json.auth.TokenHolder;
 import com.auth0.net.TokenRequest;
 import com.topchoir.directory.dto.LoginInput;
+import com.topchoir.directory.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,9 @@ public class AuthController {
     @Value("${auth0.client.realm}")
     private String realm;
 
+    @Autowired
+    AuthService authService;
+
     @GetMapping("/public")
     public String publicEndpoint() {
         return "public";
@@ -40,11 +45,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public TokenHolder login(@RequestBody LoginInput input) throws Auth0Exception {
-        // login using auth0 client
-        AuthAPI auth = AuthAPI.newBuilder(domain, clientId, clientSecret).build();
 
-        TokenRequest loginRequest =  auth.login(input.getEmail(), input.getPassword().toCharArray(), realm);
-
-        return loginRequest.execute().getBody();
+        return authService.login(input.getEmail(),input.getPassword());
     }
 }

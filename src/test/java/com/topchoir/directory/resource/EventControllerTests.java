@@ -95,7 +95,7 @@ public class EventControllerTests {
     }
 
     @Test
-    public void whenValidInput_thenCreateEvent() throws IOException, Exception {
+    public void whenValidInputThenCreateEvent() throws IOException, Exception {
 
         Event powerShift = new Event( null, null, LocalDateTime.of(2023,8,18,21,30,00),LocalDateTime.of(2023,8,18,18,30,00), "Annual", "Power Shift");
 
@@ -111,7 +111,7 @@ public class EventControllerTests {
     }
 
     @Test
-    void whenUpdateEvent_thenReturnUpdatedEvent() throws Exception {
+    void whenUpdateEventThenReturnUpdatedEvent() throws Exception {
         Map<String, Object> partialEncounter = new HashMap<String,Object>();
         partialEncounter.put("name","Encounter His Power");
         partialEncounter.put("description","Meet Him, Praise Him, Worship Him, Encounter Him");
@@ -126,7 +126,7 @@ public class EventControllerTests {
     }
 
     @Test
-    public void whenDeleteEvent_thenReturnException() throws Exception {
+    public void whenDeleteEventThenReturnException() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/events/2"))
                 .andExpect(status().isOk());
 
