@@ -54,7 +54,7 @@ public class EventServiceIntegrationTests {
 
 
     @Test
-    public void whenFindById_thenReturnEvent() {
+    public void whenFindByIdThenReturnEvent() {
         // given in setUp()
 
 
@@ -67,7 +67,7 @@ public class EventServiceIntegrationTests {
     }
 
     @Test
-    public void whenAddEvent_thenReturnAddedEvent() {
+    public void whenAddEventThenReturnAddedEvent() {
         // given
         Event powerShift = new Event( null, null, LocalDateTime.of(2023,8,18,21,30,00),LocalDateTime.of(2023,8,18,18,30,00), "Annual", "Power Shift");
 
@@ -85,7 +85,7 @@ public class EventServiceIntegrationTests {
     }
 
     @Test
-    public void whenUpdateEvent_thenReturnUpdatedEvent(){
+    public void whenUpdateEventThenReturnUpdatedEvent(){
         //given
         Map<String, Object> partialEncounter = new HashMap<String,Object>();
         partialEncounter.put("name","Encounter His Power");
@@ -101,7 +101,7 @@ public class EventServiceIntegrationTests {
     }
 
     @Test
-    public void whenDeleteEvent_thenReturnException(){
+    public void whenDeleteEventThenReturnException(){
 
         eventService.deleteEvent(1);
 

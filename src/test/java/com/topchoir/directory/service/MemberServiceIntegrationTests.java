@@ -46,10 +46,10 @@ public class MemberServiceIntegrationTests {
     public void setUp() {
         Member john = new Member( null, null, null, null, "singer - tenor", LocalDate.of(2003,11,22),
                 "29 St Johns NL", LocalDate.of(1990,04,10), "289-864-3880",
-                "auth0|76ef87f2086f90eo72098005","pnOPQfgiy63@07!--","f_switz@gmail.ca", "Stone", "John");
+                "76ef87f2086f90eo72098005","pnOPQfgiy63@07!--","f_switz@gmail.ca", "Stone", "John");
         Member jane = new Member( null, null, null, null, "singer - soprano", LocalDate.of(2015,02,18),
                 "12b-3600 Junper Rains Dr ON", LocalDate.of(1995,05,29), "383-451-9003",
-                "auth0|17gh87f8556f90da09834775","8463ayUIhge@$#&))>","jNelly@yahoo.co.uk", "Nelliers", "Jane");
+                "17gh87f8556f90da09834775","8463ayUIhge@$#&))>","jNelly@yahoo.co.uk", "Nelliers", "Jane");
         memberRepository.save(john);
         memberRepository.save(jane);
 
@@ -82,7 +82,7 @@ public class MemberServiceIntegrationTests {
 
 
     @Test
-    public void whenFindById_thenReturnMember() {
+    public void whenFindByIdThenReturnMember() {
         // given in setUp()
 
 
@@ -95,11 +95,11 @@ public class MemberServiceIntegrationTests {
     }
 
     @Test
-    public void whenAddMember_thenReturnAddedMember() {
+    public void whenAddMemberThenReturnAddedMember() {
         // given
         Member jones = new Member( null, null, null, null, "singer - alto", LocalDate.of(2015,02,18),
                 "907b Jarry Junes Blvd, MB", LocalDate.of(1995,05,29), "383-451-9003",
-                "auth0|25ng90f8556e80rt09801629","72HG2!0Odfuye*^%","j_Cheerioos9@yahoo.co.uk", "Cherry", "Jones");
+                "25ng90f8556e80rt09801629","72HG2!0Odfuye*^%","j_Cheerioos9@yahoo.co.uk", "Cherry", "Jones");
 
 
         // when
@@ -116,7 +116,7 @@ public class MemberServiceIntegrationTests {
     }
 
     @Test
-    public void whenUpdateMember_thenReturnUpdatedMember(){
+    public void whenUpdateMemberThenReturnUpdatedMember(){
         //given
         Map<String, Object> partialJane = new HashMap<String,Object>();
         partialJane.put("lastName","Newmann");
@@ -132,7 +132,7 @@ public class MemberServiceIntegrationTests {
     }
 
     @Test
-    public void whenDeleteMember_thenReturnException(){
+    public void whenDeleteMemberThenReturnException(){
 
         memberService.deleteMember(1);
 
