@@ -13,9 +13,6 @@ import java.util.List;
 @Entity
 public class Member {
 
-    //The absence of the cascade property, results in the TransientPropertyValueException exception when Hibernate tries
-    // to save an object containing a nested object
-
     @Column(nullable = true)
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @Fetch(FetchMode.JOIN)
@@ -27,6 +24,8 @@ public class Member {
     @JsonIgnoreProperties("handlers")
     private List<Equipment> equipment = new ArrayList<>();
 
+    //The absence of the cascade property, results in the TransientPropertyValueException exception when Hibernate tries
+    // to save an object containing a nested object
     @Column(nullable = true)
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @Fetch(FetchMode.JOIN)
@@ -37,54 +36,40 @@ public class Member {
     )
     @JsonIgnoreProperties("members")
     private List<Event> events = new ArrayList<>();
-
     @Column(nullable = true)
-    private String adminLevel;
-
+    @Enumerated(EnumType.STRING)
+    private MemberType adminLevel = MemberType.MEMBER;
     @Column(nullable = true)
     private String choirDept;
-
     @Column(nullable = false)
     private String type;
-
     @Column(nullable = false)
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate joinDate;
-
     @Column(nullable = true)
     private String address;
-
     @Column(nullable = true)
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthday;
-
     @Column(nullable = false)
     private String phoneNumber;
-
     @Column(nullable = false, unique = true)
     private String userId;
-
     @Transient
     private String password;
-
     @Column(nullable = false, unique = true)
     private String email;
-
     @Column(nullable = false)
     private String lastName;
-
     @Column(nullable = false) //nullable = false is a required field
     private String firstName;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-
-
-    public Member(List<Equipment> equipment, List<Event> events, String adminLevel,
+    public Member(List<Equipment> equipment, List<Event> events, MemberType adminLevel,
                   String choirDept, String type, LocalDate joinDate, String address,
-                  LocalDate birthday, String phoneNumber,String userId, String password,
+                  LocalDate birthday, String phoneNumber, String userId, String password,
                   String email, String lastName, String firstName) {
         this.equipment = equipment;
         this.events = events;
@@ -102,6 +87,7 @@ public class Member {
         this.firstName = firstName;
 
     }
+
 
     public Member() {
     }
@@ -152,11 +138,11 @@ public class Member {
         this.events = events;
     }
 
-    public String getAdminLevel() {
+    public MemberType getAdminLevel() {
         return adminLevel;
     }
 
-    public void setAdminLevel(String adminLevel) {
+    public void setAdminLevel(MemberType adminLevel) {
         this.adminLevel = adminLevel;
     }
 
@@ -275,6 +261,10 @@ public class Member {
                 ", userId=" + userId +
                 '}';
     }
+
+    enum MemberType {
+        ADMIN, MEMBER
+    } //end enum MemberType
 
 
 }

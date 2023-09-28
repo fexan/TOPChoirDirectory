@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,9 @@ public class MemberController {
 
 
     @GetMapping
-    public List<Member> getAllMembers() {
+    public List<Member> getAllMembers(Principal principal) {
+        logger.info("Principal: {}", principal);
+        logger.info("Principal name: {}", principal.getName());
         return service.getAllMembers();
     }
 
