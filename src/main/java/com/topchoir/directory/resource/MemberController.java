@@ -11,7 +11,9 @@ import com.topchoir.directory.service.MemberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.security.Principal;
 import java.util.List;
@@ -39,12 +41,49 @@ public class MemberController {
     public List<Member> getAllMembers(Principal principal) {
         logger.info("Principal: {}", principal);
         logger.info("Principal name: {}", principal.getName());
-        return service.getAllMembers();
+
+        List<Member> allMembers = service.getAllMembers();
+        Member tempMember = new Member();
+        String userIdPrincipal = principal.getName().substring(6);
+
+        for (Member m : allMembers){
+            if (m.getUserId().equals(userIdPrincipal)){
+                tempMember = m;
+                break;
+            }
+        }
+
+
+        if (tempMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
+            return allMembers;
+        }else{
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to view this information.");
+        }
     }
 
     @GetMapping("/{id}")
-    public Member getMember(@PathVariable int id) {
-        return service.getMember(id);
+    public Member getMember(@PathVariable int id, Principal principal) {
+        List<Member> allMembers = service.getAllMembers();
+        Member tempMember = new Member();
+        String userIdPrincipal = principal.getName().substring(6);
+
+        for (Member m : allMembers){
+            if (m.getUserId().equals(userIdPrincipal)){
+                tempMember = m;
+                break;
+            }
+        }
+
+        if (tempMember.getAdminLevel().equals(Member.MemberType.ADMIN) && tempMember.getUserId().equals(userIdPrincipal)) {
+           //admins can get itself, other admins, non-admins
+            // for admin to NOT view other admins: && tempMember.getId() == id
+            return service.getMember(id);
+        }else if(tempMember.getUserId().equals(userIdPrincipal) && tempMember.getId() == id){
+            //non-admins can get only themselves
+            return service.getMember(id);
+        } else {
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to view this information.");
+        }
     }
 
 

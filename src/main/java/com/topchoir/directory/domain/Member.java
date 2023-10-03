@@ -262,7 +262,7 @@ public class Member {
                 '}';
     }
 
-    enum MemberType {
+    public enum MemberType {
         ADMIN, MEMBER
     } //end enum MemberType
 
