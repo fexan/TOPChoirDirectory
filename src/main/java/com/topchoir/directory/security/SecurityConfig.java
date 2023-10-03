@@ -21,6 +21,7 @@ public class SecurityConfig {
                         .requestMatchers(antMatcher("/api/public")).permitAll()
                         .requestMatchers(antMatcher("/api/auth/login")).permitAll()
                         .requestMatchers(antMatcher(HttpMethod.GET, "/api/members")).authenticated()
+                        .requestMatchers(antMatcher(HttpMethod.GET, "/api/members/{id}")).authenticated()
                         .requestMatchers(antMatcher(HttpMethod.POST, "/api/members")).permitAll()
                         .anyRequest().permitAll()
                 )
