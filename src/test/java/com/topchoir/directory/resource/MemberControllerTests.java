@@ -6,6 +6,7 @@ import com.topchoir.directory.domain.Event;
 import com.topchoir.directory.domain.Member;
 import com.topchoir.directory.repository.MemberRepository;
 import com.topchoir.directory.service.AuthService;
+import com.topchoir.directory.service.CustomMemberDetailsService;
 import com.topchoir.directory.service.MemberService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,6 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class MemberControllerTests {
 
     private static final Logger LOG = Logger.getLogger(MemberControllerTests.class.toString());
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -60,10 +63,10 @@ class MemberControllerTests {
 
     @BeforeEach
     public void setUp() {
-        Member john = new Member(null, null, null, null, "singer - tenor", LocalDate.of(2003, 11, 22),
+        Member john = new Member(null, null, Member.MemberType.ADMIN, null, "singer - tenor", LocalDate.of(2003, 11, 22),
                 "29 St Johns NL", LocalDate.of(1990, 04, 10), "289-864-3880",
                 "76ef87f2086f90eo72098005", "pnOPQfgiy63@07!--", "f_switz@gmail.ca", "Stone", "John");
-        Member jane = new Member(null, null, null, null, "singer - soprano", LocalDate.of(2015, 02, 18),
+        Member jane = new Member(null, null, Member.MemberType.MEMBER, null, "singer - soprano", LocalDate.of(2015, 02, 18),
                 "12b-3600 Junper Rains Dr ON", LocalDate.of(1995, 05, 29), "383-451-9003",
                 "17gh87f8556f90da09834775", "8463ayUIhge@$#&))>", "jNelly@yahoo.co.uk", "Nelliers", "Jane");
         memberRepository.save(john);
@@ -93,7 +96,8 @@ class MemberControllerTests {
 
 
     @Test
-    void getAllMembers() throws Exception {
+    @WithUserDetails("auth0|76ef87f2086f90eo72098005")
+    void AdminRetrievesAllMembersDetails() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/members"))
                 .andExpect(status().isOk())
@@ -103,11 +107,24 @@ class MemberControllerTests {
     }
 
     @Test
-    void getOneMember() throws Exception {
+    @WithUserDetails("auth0|76ef87f2086f90eo72098005")
+    void AdminRetrievesOneMemberDetails() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/members/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value("John"));
+    }
+
+    @Test
+    @WithUserDetails("auth0|17gh87f8556f90da09834775")
+    void NonAdminAttemptsToRetrieveAdminMemberDetails() throws Exception {
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/members/1"));
+        } catch (Exception e) {
+            assertEquals("Request processing failed: org.springframework.web.client.HttpClientErrorException: "
+                    +"401 Member does the have the permissions to view this information.", e.getMessage());
+
+        }
     }
 
     @Test

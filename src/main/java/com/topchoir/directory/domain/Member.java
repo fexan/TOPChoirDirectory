@@ -55,7 +55,8 @@ public class Member {
     private String phoneNumber;
     @Column(nullable = false, unique = true)
     private String userId;
-    @Transient
+
+    //@Transient
     private String password;
     @Column(nullable = false, unique = true)
     private String email;

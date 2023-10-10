@@ -4,6 +4,7 @@ import com.topchoir.directory.domain.Equipment;
 import com.topchoir.directory.domain.Event;
 import com.topchoir.directory.domain.Member;
 import com.topchoir.directory.repository.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,14 @@ public class MemberService {
             throw new ObjectNotFoundException(tempMember, "Member with id {" + id + "} not found");
 
         return repo.findById(id).get();
+    }
+
+    @Transactional
+    public Member getMemberByUserId(String userId) {
+        if (repo.findByUserId(userId) != null)
+            return repo.findByUserId(userId);
+
+        throw new EntityNotFoundException("No member with this userId exists.");
     }
 
     @Transactional

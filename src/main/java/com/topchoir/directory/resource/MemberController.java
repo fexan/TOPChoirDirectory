@@ -39,51 +39,34 @@ public class MemberController {
 
     @GetMapping
     public List<Member> getAllMembers(Principal principal) {
-        logger.info("Principal: {}", principal);
-        logger.info("Principal name: {}", principal.getName());
 
         List<Member> allMembers = service.getAllMembers();
-        Member tempMember = new Member();
-        String userIdPrincipal = principal.getName().substring(6);
+        Member currentMember = getCurrentMember(principal);
 
-        for (Member m : allMembers){
-            if (m.getUserId().equals(userIdPrincipal)){
-                tempMember = m;
-                break;
-            }
-        }
-
-
-        if (tempMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
+        if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
             return allMembers;
         }else{
             throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to view this information.");
         }
+
     }
 
+    /**
+     * Signed in admin can retrieve details for admins (including itself) and non-admin
+     * Signed in non-admin can retrieve details for only itself
+     * @param id
+     * @param principal -- Spring security feature. Represents the current signed in user.
+     * @return Member with specified {id}
+     */
     @GetMapping("/{id}")
     public Member getMember(@PathVariable int id, Principal principal) {
-        List<Member> allMembers = service.getAllMembers();
-        Member tempMember = new Member();
-        String userIdPrincipal = principal.getName().substring(6);
+        Member currentMember = getCurrentMember(principal);
 
-        for (Member m : allMembers){
-            if (m.getUserId().equals(userIdPrincipal)){
-                tempMember = m;
-                break;
-            }
-        }
+        if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN) || currentMember.getId() == id )
+            return service.getMember(id);
 
-        if (tempMember.getAdminLevel().equals(Member.MemberType.ADMIN) && tempMember.getUserId().equals(userIdPrincipal)) {
-           //admins can get itself, other admins, non-admins
-            // for admin to NOT view other admins: && tempMember.getId() == id
-            return service.getMember(id);
-        }else if(tempMember.getUserId().equals(userIdPrincipal) && tempMember.getId() == id){
-            //non-admins can get only themselves
-            return service.getMember(id);
-        } else {
-            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to view this information.");
-        }
+        throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to view this information.");
+
     }
 
 
@@ -103,35 +86,81 @@ public class MemberController {
     }
 
     @PutMapping("/{id}/equipment/{equipment_id}")
-    public Member addOneEquipment(@PathVariable int id, @PathVariable int equipment_id) {
+    public Member addOneEquipment(@PathVariable int id, @PathVariable int equipment_id, Principal principal) {
         Equipment oneEquipment = equipmentService.getOneEquipment(equipment_id);
         System.out.println(oneEquipment);
-        return service.addOneEquipment(id, oneEquipment);
+
+        Member currentMember = getCurrentMember(principal);
+
+        if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
+            return service.addOneEquipment(id, oneEquipment);
+        }else{
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to perform this operation.");
+        }
     }
 
     @PutMapping("/{id}/remove_equipment/{equipment_id}")
-    public Member removeOneEquipment(@PathVariable int id, @PathVariable int equipment_id) {
+    public Member removeOneEquipment(@PathVariable int id, @PathVariable int equipment_id, Principal principal) {
         Equipment oneEquipment = equipmentService.getOneEquipment(equipment_id);
         System.out.println(oneEquipment);
-        return service.removeOneEquipment(id, oneEquipment);
+
+        Member currentMember = getCurrentMember(principal);
+
+        if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
+            return service.removeOneEquipment(id, oneEquipment);
+        }else{
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to perform this operation.");
+        }
     }
 
 
     @PutMapping("/{id}/events/{event_id}")
-    public Member addEvent(@PathVariable int id, @PathVariable int event_id) {
+    public Member addEvent(@PathVariable int id, @PathVariable int event_id, Principal principal) {
         Event event = eventService.getEvent(event_id);
-        return service.addEvent(id, event);
+
+        Member currentMember = getCurrentMember(principal);
+
+        if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
+            return service.addEvent(id, event);
+        }else{
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to perform this operation.");
+        }
     }
 
     @PutMapping("/{id}/remove_events/{event_id}")
-    public Member removeEvent(@PathVariable int id, @PathVariable int event_id) {
+    public Member removeEvent(@PathVariable int id, @PathVariable int event_id, Principal principal) {
+
         Event event = eventService.getEvent(event_id);
         System.out.println(event);
-        return service.removeEvent(id, event);
+
+        Member currentMember = getCurrentMember(principal);
+
+        if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
+            return service.removeEvent(id, event);
+        }else{
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to perform this operation.");
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteMember(@PathVariable int id) {
-        service.deleteMember(id);
+    public void deleteMember(@PathVariable int id, Principal principal) {
+
+        Member currentMember = getCurrentMember(principal);
+
+        if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
+            service.deleteMember(id);
+        }else{
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to perform this operation.");
+        }
+    }
+
+    public Member getCurrentMember(Principal principal) {
+        logger.info("Principal: {}", principal);
+        logger.info("Principal name: {}", principal.getName());
+
+        String userIdPrincipal = principal.getName().substring(6);
+        Member currentUser = service.getMemberByUserId(userIdPrincipal);
+
+        return currentUser;
     }
 }
