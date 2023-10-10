@@ -149,6 +149,7 @@ class MemberControllerTests {
     }
 
     @Test
+    @WithUserDetails("auth0|17gh87f8556f90da09834775")
     void whenUpdateMemberThenReturnUpdatedMember() throws Exception {
         Map<String, Object> partialJane = new HashMap<String, Object>();
         partialJane.put("lastName", "Newmann");
@@ -165,6 +166,7 @@ class MemberControllerTests {
     }
 
     @Test
+    @WithUserDetails("auth0|76ef87f2086f90eo72098005")
     public void whenDeleteMemberThenReturnException() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/members/2"))
                 .andExpect(status().isOk());
