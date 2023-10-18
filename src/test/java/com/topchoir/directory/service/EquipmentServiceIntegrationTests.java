@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -28,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class EquipmentServiceIntegrationTests {
 
     private static final Logger LOG = Logger.getLogger(EquipmentServiceIntegrationTests.class.toString());
+    private Pageable pageable = PageRequest.of(0, 5);
+
     @Autowired
     private EquipmentService equipmentService;
 
@@ -49,7 +53,7 @@ public class EquipmentServiceIntegrationTests {
 
     @Test
     public void shouldGetAllEquipment() {
-        List<Equipment> equipment = equipmentService.getAllEquipment();
+        List<Equipment> equipment = equipmentService.getAllEquipment(pageable);
         LOG.info(equipment.toString());
         assert(equipment.size() == 2);
     }
@@ -81,7 +85,7 @@ public class EquipmentServiceIntegrationTests {
                 .isEqualTo("Drums");
 
         //then all equipment = 3
-        List<Equipment> allEquipment = equipmentService.getAllEquipment();
+        List<Equipment> allEquipment = equipmentService.getAllEquipment(pageable);
         LOG.info(allEquipment.toString());
         assert(allEquipment.size() == 3);
     }

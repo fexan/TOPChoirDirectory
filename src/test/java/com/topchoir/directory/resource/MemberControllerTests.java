@@ -63,30 +63,30 @@ class MemberControllerTests {
 
     @BeforeEach
     public void setUp() {
-        Member john = new Member(null, null, Member.MemberType.ADMIN, null, "singer - tenor", LocalDate.of(2003, 11, 22),
+        Member john0 = new Member(null, null, Member.MemberType.ADMIN, null, "singer - tenor", LocalDate.of(2003, 11, 22),
                 "29 St Johns NL", LocalDate.of(1990, 04, 10), "289-864-3880",
-                "76ef87f2086f90eo72098005", "pnOPQfgiy63@07!--", "f_switz@gmail.ca", "Stone", "John");
-        Member jane = new Member(null, null, Member.MemberType.MEMBER, null, "singer - soprano", LocalDate.of(2015, 02, 18),
+                "76ef87f2086f90eo72098004", "pnOPQfgiy63@07!--", "f0_switz@gmail.ca", "Stone", "John0");
+        Member jane0 = new Member(null, null, Member.MemberType.MEMBER, null, "singer - soprano", LocalDate.of(2015, 02, 18),
                 "12b-3600 Junper Rains Dr ON", LocalDate.of(1995, 05, 29), "383-451-9003",
-                "17gh87f8556f90da09834775", "8463ayUIhge@$#&))>", "jNelly@yahoo.co.uk", "Nelliers", "Jane");
-        memberRepository.save(john);
-        memberRepository.save(jane);
+                "17gh87f8556f90da09834774", "8463ayUIhge@$#&))>", "j0Nelly@yahoo.co.uk", "Nelliers", "Jane0");
+        memberRepository.save(john0);
+        memberRepository.save(jane0);
 
         Equipment piano = new Equipment(null, null, "R37534-63439", "Yamaha: Perfection", "Piano");
         Equipment frontSpeaker1 = new Equipment(null, null, "X03432-64344", "Bose, Located near instruments", "Front Speaker 1");
 
         Event practice = new Event(null, null, LocalDateTime.of(2023, 8, 18, 21, 30, 00), LocalDateTime.of(2023, 8, 18, 18, 30, 00), "Weekly", "Practice");
 
-        john.setEquipment(Arrays.asList(piano));
-        john.setEquipment(Arrays.asList(frontSpeaker1));
-        john.setEvents(Arrays.asList(practice));
+        john0.setEquipment(Arrays.asList(piano));
+        john0.setEquipment(Arrays.asList(frontSpeaker1));
+        john0.setEvents(Arrays.asList(practice));
 
-        jane.setEquipment(Arrays.asList(piano));
-        jane.setEquipment(Arrays.asList(frontSpeaker1));
-        jane.setEvents(Arrays.asList(practice));
+        jane0.setEquipment(Arrays.asList(piano));
+        jane0.setEquipment(Arrays.asList(frontSpeaker1));
+        jane0.setEvents(Arrays.asList(practice));
 
-        memberRepository.save(john);
-        memberRepository.save(jane);
+        memberRepository.save(john0);
+        memberRepository.save(jane0);
     }
 
     @AfterEach
@@ -96,33 +96,33 @@ class MemberControllerTests {
 
 
     @Test
-    @WithUserDetails("auth0|76ef87f2086f90eo72098005")
+    @WithUserDetails("auth0|76ef87f2086f90eo72098004")
     void AdminRetrievesAllMembersDetails() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/members"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].firstName").value("John"))
-                .andExpect(jsonPath("$[1].firstName").value("Jane"));
+                .andExpect(jsonPath("$", hasSize(4))) //considering the import.sql rows
+                .andExpect(jsonPath("$[2].firstName").value("John0"))
+                .andExpect(jsonPath("$[3].firstName").value("Jane0"));
     }
 
     @Test
-    @WithUserDetails("auth0|76ef87f2086f90eo72098005")
+    @WithUserDetails("auth0|76ef87f2086f90eo72098004")
     void AdminRetrievesOneMemberDetails() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/members/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/members/3"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName").value("John"));
+                .andExpect(jsonPath("$.firstName").value("John0"));
     }
 
     @Test
-    @WithUserDetails("auth0|17gh87f8556f90da09834775")
+    @WithUserDetails("auth0|17gh87f8556f90da09834774")
     void NonAdminAttemptsToRetrieveAdminMemberDetails() throws Exception {
         try {
-            mockMvc.perform(MockMvcRequestBuilders.get("/api/members/1"));
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/members/3"));
         } catch (Exception e) {
             assertEquals("Request processing failed: org.springframework.web.client.HttpClientErrorException: "
-                    +"401 Member does the have the permissions to view this information.", e.getMessage());
+                    +"401 Member does not have the permissions to view this information.", e.getMessage());
 
         }
     }
@@ -149,13 +149,13 @@ class MemberControllerTests {
     }
 
     @Test
-    @WithUserDetails("auth0|17gh87f8556f90da09834775")
+    @WithUserDetails("auth0|17gh87f8556f90da09834774")
     void whenUpdateMemberThenReturnUpdatedMember() throws Exception {
         Map<String, Object> partialJane = new HashMap<String, Object>();
         partialJane.put("lastName", "Newmann");
         partialJane.put("address", "29 Juniper St SK");
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch("/api/members/2")
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.patch("/api/members/4")
                         .content(objectMapper.writeValueAsString(partialJane)).contentType("application/json;charset=UTF-8"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -166,16 +166,16 @@ class MemberControllerTests {
     }
 
     @Test
-    @WithUserDetails("auth0|76ef87f2086f90eo72098005")
+    @WithUserDetails("auth0|76ef87f2086f90eo72098004")
     public void whenDeleteMemberThenReturnException() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/members/2"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/members/4"))
                 .andExpect(status().isOk());
 
         try {
-            mockMvc.perform(MockMvcRequestBuilders.get("/api/members/2"));
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/members/4"));
         } catch (Exception e) {
             assertEquals("Request processing failed: org.hibernate.ObjectNotFoundException: No row with the "
-                    + "given identifier exists: [Member with id {2} not found#Optional.empty]", e.getMessage());
+                    + "given identifier exists: [Member with id {4} not found#Optional.empty]", e.getMessage());
 
         }
 

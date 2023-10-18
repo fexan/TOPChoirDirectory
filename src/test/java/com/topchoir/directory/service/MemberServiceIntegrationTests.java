@@ -12,6 +12,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -42,29 +45,32 @@ public class MemberServiceIntegrationTests {
     @Autowired
     private MemberRepository memberRepository;
 
+    private  Pageable pageable = PageRequest.of(0, 5);
+
+
     @BeforeEach
     public void setUp() {
-        Member john = new Member( null, null, null, null, "singer - tenor", LocalDate.of(2003,11,22),
+        Member john1 = new Member( null, null, null, null, "singer - tenor", LocalDate.of(2003,11,22),
                 "29 St Johns NL", LocalDate.of(1990,04,10), "289-864-3880",
-                "76ef87f2086f90eo72098005","pnOPQfgiy63@07!--","f_switz@gmail.ca", "Stone", "John");
-        Member jane = new Member( null, null, null, null, "singer - soprano", LocalDate.of(2015,02,18),
+                "76ef87f2086f90eo72098001","pnOPQfgiy63@07!--","f1_switz@gmail.ca", "Stone", "John1");
+        Member jane1 = new Member( null, null, null, null, "singer - soprano", LocalDate.of(2015,02,18),
                 "12b-3600 Junper Rains Dr ON", LocalDate.of(1995,05,29), "383-451-9003",
-                "17gh87f8556f90da09834775","8463ayUIhge@$#&))>","jNelly@yahoo.co.uk", "Nelliers", "Jane");
-        memberRepository.save(john);
-        memberRepository.save(jane);
+                "17gh87f8556f90da09834771","8463ayUIhge@$#&))>","j1Nelly@yahoo.co.uk", "Nelliers", "Jane1");
+        memberRepository.save(john1);
+        memberRepository.save(jane1);
 
         Equipment piano = new Equipment( null, null, "R37534-63439", "Yamaha: Perfection", "Piano");
         Equipment frontSpeaker1 = new Equipment( null, null, "X03432-64344", "Bose, Located near instruments", "Front Speaker 1");
 
         Event practice = new Event( null, null, LocalDateTime.of(2023,8,18,21,30,00),LocalDateTime.of(2023,8,18,18,30,00), "Weekly", "Practice");
 
-        john.setEquipment(Arrays.asList(piano));
-        john.setEquipment(Arrays.asList(frontSpeaker1));
-        john.setEvents(Arrays.asList(practice));
+        john1.setEquipment(Arrays.asList(piano));
+        john1.setEquipment(Arrays.asList(frontSpeaker1));
+        john1.setEvents(Arrays.asList(practice));
 
-        jane.setEquipment(Arrays.asList(piano));
-        jane.setEquipment(Arrays.asList(frontSpeaker1));
-        jane.setEvents(Arrays.asList(practice));
+        jane1.setEquipment(Arrays.asList(piano));
+        jane1.setEquipment(Arrays.asList(frontSpeaker1));
+        jane1.setEvents(Arrays.asList(practice));
 
     }
 
@@ -75,9 +81,9 @@ public class MemberServiceIntegrationTests {
 
     @Test
     public void shouldGetAllMembers() {
-        List<Member> members = memberService.getAllMembers();
+        List<Member> members = memberService.getAllMembers(pageable);
         LOG.info(members.toString());
-        assert(members.size() == 2);
+        assert(members.size() == 4);
     }
 
 
@@ -87,32 +93,32 @@ public class MemberServiceIntegrationTests {
 
 
         // when
-        Member foundJohn = memberService.getMember(1);
+        Member foundJohn1 = memberService.getMember(3);
 
         // then
-        assertThat(foundJohn.getFirstName())
-                .isEqualTo("John");
+        assertThat(foundJohn1.getFirstName())
+                .isEqualTo("John1");
     }
 
     @Test
     public void whenAddMemberThenReturnAddedMember() {
         // given
-        Member jones = new Member( null, null, null, null, "singer - alto", LocalDate.of(2015,02,18),
+        Member jones1 = new Member( null, null, null, null, "singer - alto", LocalDate.of(2015,02,18),
                 "907b Jarry Junes Blvd, MB", LocalDate.of(1995,05,29), "383-451-9003",
-                "25ng90f8556e80rt09801629","72HG2!0Odfuye*^%","j_Cheerioos9@yahoo.co.uk", "Cherry", "Jones");
+                "25ng90f8556e80rt09801629","72HG2!0Odfuye*^%","j_Cheerioos9@yahoo.co.uk", "Cherry", "Jones1");
 
 
         // when
-        Member addedJones = memberService.addMember(jones);
+        Member addedJones1 = memberService.addMember(jones1);
 
         // then
-        assertThat(addedJones.getFirstName())
-                .isEqualTo("Jones");
+        assertThat(addedJones1.getFirstName())
+                .isEqualTo("Jones1");
 
-        //then all members = 3
-        List<Member> allMembers = memberService.getAllMembers();
+        //then all members = 5 cuz of import.sql rows
+        List<Member> allMembers = memberService.getAllMembers(pageable);
         LOG.info(allMembers.toString());
-        assert(allMembers.size() == 3);
+        assert(allMembers.size() == 5);
     }
 
     @Test
@@ -123,7 +129,7 @@ public class MemberServiceIntegrationTests {
         partialJane.put("address","29 Juniper St SK");
 
         //when
-        Member updatedJane = memberService.updateMember(2,partialJane);
+        Member updatedJane = memberService.updateMember(4,partialJane);
 
         //then
         assertEquals("Newmann",updatedJane.getLastName());
@@ -134,12 +140,12 @@ public class MemberServiceIntegrationTests {
     @Test
     public void whenDeleteMemberThenReturnException(){
 
-        memberService.deleteMember(1);
+        memberService.deleteMember(3);
 
         try {
-            Member deletedMember = memberService.getMember(1);
+            Member deletedMember = memberService.getMember(3);
         }catch (ObjectNotFoundException e) {
-            assertEquals("No row with the given identifier exists: [Member with id {1} not found#Optional.empty]",e.getMessage());
+            assertEquals("No row with the given identifier exists: [Member with id {3} not found#Optional.empty]",e.getMessage());
 
         }
     }
