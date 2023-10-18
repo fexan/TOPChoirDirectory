@@ -7,7 +7,9 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.spi.json.GsonJsonProvider;
 import com.topchoir.directory.domain.Equipment;
+import com.topchoir.directory.domain.Member;
 import com.topchoir.directory.repository.EquipmentRepository;
+import com.topchoir.directory.repository.MemberRepository;
 import com.topchoir.directory.service.EquipmentService;
 import org.hibernate.ObjectNotFoundException;
 import org.junit.After;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -59,6 +62,9 @@ class EquipmentControllerTests {
     private EquipmentRepository equipmentRepository;
 
     @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @BeforeEach
@@ -67,6 +73,15 @@ class EquipmentControllerTests {
         Equipment frontSpeaker1 = new Equipment( null, null, "X03432-64344", "Bose, Located near instruments", "Front Speaker 1");
         equipmentRepository.save(piano);
         equipmentRepository.save(frontSpeaker1);
+
+        Member john3 = new Member(null, null, Member.MemberType.ADMIN, null, "singer - tenor", LocalDate.of(2003, 11, 22),
+                "29 St Johns NL", LocalDate.of(1990, 04, 10), "289-864-3880",
+                "76ef87f2086f90eo72098003", "pnOPQfgiy63@07!--", "f3_switz@gmail.ca", "Stone", "John3");
+        Member jane3 = new Member(null, null, Member.MemberType.MEMBER, null, "singer - soprano", LocalDate.of(2015, 02, 18),
+                "12b-3600 Junper Rains Dr ON", LocalDate.of(1995, 05, 29), "383-451-9003",
+                "17gh87f8556f90da09834773", "8463ayUIhge@$#&))>", "j3Nelly@yahoo.co.uk", "Nelliers", "Jane3");
+        memberRepository.save(john3);
+        memberRepository.save(jane3);
     }
 
     @AfterEach
@@ -76,6 +91,7 @@ class EquipmentControllerTests {
 
 
     @Test
+    @WithUserDetails("auth0|76ef87f2086f90eo72098003")
     void getAllEquipment() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/equipment"))
@@ -86,6 +102,7 @@ class EquipmentControllerTests {
     }
 
     @Test
+    @WithUserDetails("auth0|17gh87f8556f90da09834773")
     void getOneEquipment() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/equipment/1"))
@@ -94,6 +111,7 @@ class EquipmentControllerTests {
     }
 
     @Test
+    @WithUserDetails("auth0|76ef87f2086f90eo72098003")
     public void whenValidInputThenCreateOneEquipment() throws IOException, Exception {
 
         Equipment drums = new Equipment( null, null, "X03432-64344", "Yamaha", "Drums");
@@ -110,6 +128,7 @@ class EquipmentControllerTests {
     }
 
     @Test
+    @WithUserDetails("auth0|76ef87f2086f90eo72098003")
     void whenUpdateOneEquipmentThenReturnUpdatedOneEquipment() throws Exception {
         Map<String, Object> partialPiano = new HashMap<String,Object>();
         partialPiano.put("name","Piano-15678");
@@ -125,6 +144,7 @@ class EquipmentControllerTests {
     }
 
     @Test
+    @WithUserDetails("auth0|76ef87f2086f90eo72098003")
     public void whenDeleteOneEquipmentThenReturnException() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/equipment/2"))
                 .andExpect(status().isOk());

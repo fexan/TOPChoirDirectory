@@ -7,7 +7,9 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.spi.json.GsonJsonProvider;
 import com.topchoir.directory.domain.Event;
+import com.topchoir.directory.domain.Member;
 import com.topchoir.directory.repository.EventRepository;
+import com.topchoir.directory.repository.MemberRepository;
 import com.topchoir.directory.service.EventService;
 import org.hibernate.ObjectNotFoundException;
 import org.junit.After;
@@ -21,7 +23,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -53,11 +58,16 @@ public class EventControllerTests {
 
     private static final Logger LOG = Logger.getLogger(EventControllerTests.class.toString());
 
+    private Pageable pageable = PageRequest.of(0, 5);
+
     @Autowired
     private EventService eventService;
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -68,6 +78,15 @@ public class EventControllerTests {
         Event encounter = new Event( null, null, LocalDateTime.of(2023,10,18,21,30,00),LocalDateTime.of(2023,10,18,18,30,00), "Annual Concert", "Encounter");
         eventRepository.save(practice);
         eventRepository.save(encounter);
+
+        Member john2 = new Member(null, null, Member.MemberType.ADMIN, null, "singer - tenor", LocalDate.of(2003, 11, 22),
+                "29 St Johns NL", LocalDate.of(1990, 04, 10), "289-864-3880",
+                "76ef87f2086f90eo72098002", "pnOPQfgiy63@07!--", "f2_switz@gmail.ca", "Stone", "John2");
+        Member jane2 = new Member(null, null, Member.MemberType.MEMBER, null, "singer - soprano", LocalDate.of(2015, 02, 18),
+                "12b-3600 Junper Rains Dr ON", LocalDate.of(1995, 05, 29), "383-451-9003",
+                "17gh87f8556f90da09834772", "8463ayUIhge@$#&))>", "j2Nelly@yahoo.co.uk", "Nelliers", "Jane2");
+        memberRepository.save(john2);
+        memberRepository.save(jane2);
     }
 
     @AfterEach
@@ -77,6 +96,7 @@ public class EventControllerTests {
 
 
     @Test
+    @WithUserDetails("auth0|76ef87f2086f90eo72098002")
     void getAllEvents() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/events"))
@@ -87,6 +107,7 @@ public class EventControllerTests {
     }
 
     @Test
+    @WithUserDetails("auth0|17gh87f8556f90da09834772")
     void getOneEvent() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/events/2"))
@@ -95,6 +116,7 @@ public class EventControllerTests {
     }
 
     @Test
+    @WithUserDetails("auth0|76ef87f2086f90eo72098002")
     public void whenValidInputThenCreateEvent() throws IOException, Exception {
 
         Event powerShift = new Event( null, null, LocalDateTime.of(2023,8,18,21,30,00),LocalDateTime.of(2023,8,18,18,30,00), "Annual", "Power Shift");
@@ -111,6 +133,7 @@ public class EventControllerTests {
     }
 
     @Test
+    @WithUserDetails("auth0|76ef87f2086f90eo72098002")
     void whenUpdateEventThenReturnUpdatedEvent() throws Exception {
         Map<String, Object> partialEncounter = new HashMap<String,Object>();
         partialEncounter.put("name","Encounter His Power");
@@ -126,6 +149,7 @@ public class EventControllerTests {
     }
 
     @Test
+    @WithUserDetails("auth0|76ef87f2086f90eo72098002")
     public void whenDeleteEventThenReturnException() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/events/2"))
                 .andExpect(status().isOk());

@@ -10,7 +10,9 @@ import com.topchoir.directory.service.EventService;
 import com.topchoir.directory.service.MemberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -38,15 +40,15 @@ public class MemberController {
 
 
     @GetMapping
-    public List<Member> getAllMembers(Principal principal) {
+    public List<Member> getAllMembers(Principal principal, @ParameterObject Pageable pageable) {
 
-        List<Member> allMembers = service.getAllMembers();
+        List<Member> allMembers = service.getAllMembers(pageable);
         Member currentMember = getCurrentMember(principal);
 
         if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
             return allMembers;
         }else{
-            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to view this information.");
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does not have the permissions to view this information.");
         }
 
     }
@@ -65,7 +67,7 @@ public class MemberController {
         if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN) || currentMember.getId() == id )
             return service.getMember(id);
 
-        throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to view this information.");
+        throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does not have the permissions to view this information.");
 
     }
 
@@ -79,10 +81,24 @@ public class MemberController {
         return service.addMember(member);
     }
 
-
+    /**
+     * Signed in admin can update details of admins (including itself) and non-admin
+     * Signed in non-admin can update details of only itself
+     * @param id
+     * @param memberPatch
+     * @param principal
+     * @return
+     */
     @PatchMapping("/{id}")
-    public Member updateMember(@PathVariable int id, @RequestBody Map<String, Object> memberPatch) {
-        return service.updateMember(id, memberPatch);
+    public Member updateMember(@PathVariable int id, @RequestBody Map<String, Object> memberPatch, Principal principal) {
+        Member currentMember = getCurrentMember(principal);
+
+        if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN) || currentMember.getId() == id )
+            return service.updateMember(id, memberPatch);
+
+        throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does not have the permissions to perform this operation.");
+
+
     }
 
     @PutMapping("/{id}/equipment/{equipment_id}")
@@ -95,7 +111,7 @@ public class MemberController {
         if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
             return service.addOneEquipment(id, oneEquipment);
         }else{
-            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to perform this operation.");
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does not have the permissions to perform this operation.");
         }
     }
 
@@ -109,7 +125,7 @@ public class MemberController {
         if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
             return service.removeOneEquipment(id, oneEquipment);
         }else{
-            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to perform this operation.");
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does not have the permissions to perform this operation.");
         }
     }
 
@@ -123,7 +139,7 @@ public class MemberController {
         if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
             return service.addEvent(id, event);
         }else{
-            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to perform this operation.");
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does not have the permissions to perform this operation.");
         }
     }
 
@@ -138,7 +154,7 @@ public class MemberController {
         if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
             return service.removeEvent(id, event);
         }else{
-            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to perform this operation.");
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does not have the permissions to perform this operation.");
         }
     }
 
@@ -150,7 +166,7 @@ public class MemberController {
         if (currentMember.getAdminLevel().equals(Member.MemberType.ADMIN)) {
             service.deleteMember(id);
         }else{
-            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does the have the permissions to perform this operation.");
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,"Member does not have the permissions to perform this operation.");
         }
     }
 
@@ -159,8 +175,8 @@ public class MemberController {
         logger.info("Principal name: {}", principal.getName());
 
         String userIdPrincipal = principal.getName().substring(6);
-        Member currentUser = service.getMemberByUserId(userIdPrincipal);
+        Member currentMember = service.getMemberByUserId(userIdPrincipal);
 
-        return currentUser;
+        return currentMember;
     }
 }

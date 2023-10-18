@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -26,6 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class EventServiceIntegrationTests {
 
     private static final Logger LOG = Logger.getLogger(EventServiceIntegrationTests.class.toString());
+
+    private Pageable pageable = PageRequest.of(0, 5);
+
     @Autowired
     private EventService eventService;
 
@@ -47,7 +52,7 @@ public class EventServiceIntegrationTests {
 
     @Test
     public void shouldGetAllEvents() {
-        List<Event> events = eventService.getAllEvents();
+        List<Event> events = eventService.getAllEvents(pageable);
         LOG.info(events.toString());
         assert(events.size() == 2);
     }
@@ -79,7 +84,7 @@ public class EventServiceIntegrationTests {
                 .isEqualTo("Power Shift");
 
         //then all events = 3
-        List<Event> allEvents = eventService.getAllEvents();
+        List<Event> allEvents = eventService.getAllEvents(pageable);
         LOG.info(allEvents.toString());
         assert(allEvents.size() == 3);
     }
